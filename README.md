@@ -1,1 +1,1 @@
-# Caso-1---Bioinform-tica
+# Caso-1---Bioinformática
