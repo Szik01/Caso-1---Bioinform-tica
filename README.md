@@ -19,3 +19,5 @@ Ministério da Saúde.
 5) Classificação Taxonômica.
 6) Anotação e validação dos achados.
 7) Laudamento.  
+
+<img width="780" height="557" alt="image" src="https://github.com/user-attachments/assets/0a3e3c1f-49dc-49c2-a73b-377973d132c0" />
