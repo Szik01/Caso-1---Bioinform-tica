@@ -92,7 +92,7 @@ ktImportTaxonomy kraken2/caso1-sindrome-respiratoriav2-output.txt \
 -o krona/caso1-sindrome-respiratoriav2-kraken.html -q 2 -t 3
 
 # Com isso, é plotado os primeiros resultados do teste metagenômico:
-Ele apresenta um gráfico de pizza interativo no qual mostra todos os tipos de células que compõe a coleta do exame, sendo elas iguais a 81% de organismos celulares, 7% de bactérias, 11% não foram identificados e por fim, 0,002% de vírus (Representado pelo primeiro plot). Destrinchando o gráfico, percebe-se que as bactérias são constituídas, em sua maioria, por bactérias normais que já residem no organismo do ser humano (Representado pelo segundo plot). Sendo assim, foram descartadas as hipóteses de patologias envolvendo bactérias. Por fim, os vírus foram observados como um potencial patógeno para a doença do caso, pois demonstram vírus como o SARS Coronavírus e BatCoronavírus (Representado pelo terceiro plot). Porém, para não tomar decisões precipitadas, é necessário verificar o que os 11% que não foram identificados significam.  
+Ele apresenta um gráfico de pizza interativo no qual mostra todos os tipos de células que compõe a coleta do exame, sendo elas iguais a 81% de organismos celulares, 7% de bactérias, 11% não foram identificados e por fim, 0,002% de vírus (Representado pelo primeiro plot). Destrinchando o gráfico, percebe-se que as bactérias são constituídas, em sua maioria, por bactérias normais que já residem no organismo do ser humano (Representado pelo segundo plot). Sendo assim, foram descartadas as hipóteses de patologias envolvendo bactérias. Por fim, os vírus foram observados como um potencial patógeno para a doença do caso, pois demonstram vírus como o SARS Coronavírus e BatCoronavírus (Representado pelo terceiro plot). Porém, para não tomar decisões precipitadas, é necessário verificar o que os 11% que não foram identificados significam. Portanto, será necessário retirar esse contaminante humano e células que ja conhecemos o genoma para focar na identificação das células não identificadas.
 
 # Primeiro plot com todas células:
 <img width="780" height="557" alt="image" src="https://github.com/user-attachments/assets/0a3e3c1f-49dc-49c2-a73b-377973d132c0" />
@@ -103,3 +103,57 @@ Ele apresenta um gráfico de pizza interativo no qual mostra todos os tipos de c
 # Vírus encontrados no primerio plot: 
 <img width="896" height="625" alt="image" src="https://github.com/user-attachments/assets/93965bd8-13e0-4c90-b2c9-d3f423914f36" />
 
+# 5) Remoção de contaminantes humanos
+
+%%bash
+"Indexar o genoma humano de referência para realizar o mapeamento e posterior remoção de contaminante"
+bwa index bwa/Chr15-reference.fasta.gz
+
+%%bash
+"Proceder com o alinhamento contra o genoma humano"
+bwa mem bwa/Chr15-reference.fasta.gz \
+  cutadapt/caso1-sindrome-respiratoriav2-trimmed_R1.fastq.gz \
+  cutadapt/caso1-sindrome-respiratoriav2-trimmed_R2.fastq.gz \
+  | samtools view -b > bwa/caso1-sindrome-respiratoriav2-mapped-host.bam
+
+%%bash
+"Com a informação de mapeamento contida no BAM, vamos filtrar somente o que não mapeeou" 
+samtools view -u -f 12 \
+  -b bwa/caso1-sindrome-respiratoriav2-mapped-host.bam \
+  | samtools sort -n > bwa/caso1-sindrome-respiratoriav2-unmapped-host.bam
+
+%%bash
+"Gerar FASTQ de reads não mapeados"
+samtools fastq bwa/caso1-sindrome-respiratoriav2-unmapped-host.bam \
+  -1 bwa/caso1-sindrome-respiratoriav2-unmapped-host_R1.fastq \
+  -2 bwa/caso1-sindrome-respiratoriav2-unmapped-host_R2.fastq
+
+# 6) Montagem dos reads em sequências menores 
+
+%%bash
+"Realiza a junção das sequências menores em contigs maiores (montagem)"
+spades.py --meta -1 bwa/caso1-sindrome-respiratoriav2-unmapped-host_R1.fastq -2 bwa/caso1-sindrome-respiratoriav2-unmapped-host_R2.fastq -o spades/
+
+# 7) Nova busca
+
+%%bash
+"Configura o banco novo para buscas via BLAST"
+makeblastdb -in blast/Chr15-reference.fasta -dbtype nucl
+
+%%bash
+"Realizar nova busca, agora com BLAST"
+blastn -query spades/scaffolds.fasta -db blast/Chr15-reference.fasta -out blast/caso1-sindrome-respiratoriav2-blast-scaffolds.txt -outfmt 6
+
+%%bash
+"Gera o gráfico de pizza para visualização dos resultados"
+ktImportTaxonomy blast/caso1-sindrome-respiratoriav2-blast-scaffolds.txt -o krona/caso1-sindrome-respiratoriav2-blast.html
+
+FIM DO CÓDIGO FONTE
+
+# Resultado: 
+
+O gráfico plotado após a nova busca não apresenta nenhum resultado, como podemos observar abaixo. 
+
+<img width="1286" height="631" alt="image" src="https://github.com/user-attachments/assets/4559fdf5-d06d-4c8f-b31b-4fb74ba6d702" />
+
+Com isso, podemos realizar algumas afirmações sobre o caso abordado. 
