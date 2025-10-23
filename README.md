@@ -148,7 +148,7 @@ blastn -query spades/scaffolds.fasta -db blast/Chr15-reference.fasta -out blast/
 "Gera o gráfico de pizza para visualização dos resultados"
 ktImportTaxonomy blast/caso1-sindrome-respiratoriav2-blast-scaffolds.txt -o krona/caso1-sindrome-respiratoriav2-blast.html
 
-FIM DO CÓDIGO FONTE
+FIM DO CÓDIGO FONTE ( pode ser acessado por esse link: https://colab.research.google.com/drive/1YIlkcQefToWCGpwYJ5wBFNXyR6X7v1Uc?usp=sharing) 
 
 # Resultado: 
 
@@ -157,3 +157,9 @@ O gráfico plotado após a nova busca não apresenta nenhum resultado, como pode
 <img width="1286" height="631" alt="image" src="https://github.com/user-attachments/assets/4559fdf5-d06d-4c8f-b31b-4fb74ba6d702" />
 
 Com isso, podemos realizar algumas afirmações sobre o caso abordado. 
+* As leituras remanescentes não apresentaram alinhamento significativo com genomas humanos, bacterianos ou virais catalogados nas bases de referência;
+* A montagem metagenômica (SPAdes) resultou em um conjunto limitado de contigs, sem similaridade substancial em BLASTn contra bancos genômicos atualizados;
+* A análise taxonômica pelo Krona não retornou categorias atribuíveis, reforçando a ausência de correspondência com organismos previamente conhecidos.
+
+Tal achado é altamente sugestivo da presença de um agente genético ainda não catalogado, possivelmente um vírus emergente com identidade parcial, porém insuficiente, com as famílias de coronavírus já conhecidas (SARS-CoV, MERS-CoV, e coronavírus de morcegos).
+O comportamento observado — desaparecimento de classificações no Krona após filtragem, aliado à inexistência de hits significativos em BLAST — é compatível com a detecção de um novo agente etiológico, cujas sequências apresentam divergência genômica relevante em relação aos vírus atualmente disponíveis nos bancos de dados públicos.
